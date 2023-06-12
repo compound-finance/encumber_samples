@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 import {ERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
-contract EncumberableErc20 is ERC20 {
+contract EncumberableERC20 is ERC20 {
     // Owner -> Taker -> Amount that can be taken
     mapping (address => mapping (address => uint)) public encumbrances;
 
@@ -50,7 +50,7 @@ contract EncumberableErc20 is ERC20 {
     function _encumber(address owner, address taker, uint amount) private {
         require(freeBalanceOf(owner) >= amount, "insufficient balance");
         encumbrances[owner][taker] += amount;
-        uint ownerTotal = encumberedBalance[owner] += amount;
+        encumberedBalance[owner] += amount;
         emit Encumber(owner, taker, amount);
     }
 
@@ -59,7 +59,7 @@ contract EncumberableErc20 is ERC20 {
           amount = encumbrances[owner][taker];
         }
         encumbrances[owner][taker] -= amount;
-        uint ownerTotal = encumberedBalance[owner] -= amount;
+        encumberedBalance[owner] -= amount;
         emit Release(owner, taker, amount);
     }
 

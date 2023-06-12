@@ -10,24 +10,33 @@ pragma solidity ^0.8.0;
 import { EncumberableERC721 } from './EncumberableERC721.sol';
 
 contract TemporaryOwnership {
+    struct Receipt {
+        address originalOwner;
+        uint expiration;
+    }
     // tokenContract -> tokenId -> expiration
-    mapping (address => mapping (uint256 => address)) public expirations;
+    mapping (address => mapping (uint256 => Receipt)) public receipts;
 
-    function lendNft(tokenContract, tokenId, recipient, expiration) public  {
+    function lendNft(address tokenContract, uint tokenId, address recipient, uint expiration) external  {
         EncumberableERC721(tokenContract).transferFromWithEncumbrance(msg.sender, recipient, address(this), tokenId);
-        expirations[tokenContract][tokenId] = expiration;
+        receipts[tokenContract][tokenId] = Receipt(msg.sender, expiration);
     }
 
-    function recallNft(address tokenContract, uint tokenId, address holder) public {
-        uint expiration = expirations[tokenContract][tokenId];
-        require(expiration != 0, "token not lent");
-        require(block.timestamp > expiration, "Term not complete");
+    function recallNft(address tokenContract, uint tokenId, address holder) external {
+        Receipt memory receipt = receipts[tokenContract][tokenId];
+        require(receipt.expiration != 0, "token not lent");
+        require(block.timestamp > receipt.expiration, "Term not complete");
+        require(receipt.originalOwner == msg.sender);
+
         EncumberableERC721(tokenContract).transferFrom(holder, msg.sender, tokenId);
-        delete expirations[tokenContract][tokenId];
+        delete receipts[tokenContract][tokenId];
     }
 
-    function letRecipientKeepNft(address tokenContract, uint tokenId, address holder) public {
-        EncumberableERC721(tokenContract).release(holder, address(this), tokenId);
-        delete expirations[tokenContract][tokenId];
+    function letRecipientKeepNft(address tokenContract, uint tokenId, address holder) external {
+        Receipt memory receipt = receipts[tokenContract][tokenId];
+        require(receipt.originalOwner == msg.sender);
+
+        EncumberableERC721(tokenContract).release(holder, tokenId);
+        delete receipts[tokenContract][tokenId];
     }
 }

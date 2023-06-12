@@ -38,7 +38,7 @@ contract EncumberableERC721 is ERC721 {
     emit Encumber(owner, taker, tokenId);
   }
 
-  function _release(address owner, uint256 tokenId) public {
+  function release(address owner, uint256 tokenId) public {
     require(msg.sender == encumbrances[owner][tokenId], "Not encumbrance taker");
     delete encumbrances[owner][tokenId];
     emit Release(owner, msg.sender, tokenId);

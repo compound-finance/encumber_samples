@@ -2,13 +2,13 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/EncumberableErc20.sol";
+import "../src/EncumberableERC20.sol";
 
 contract EncumberableErc20Test is Test {
-    event Encumber(address indexed owner, address indexed taker, uint encumberedAmount, uint ownerTotal);
-    event Release(address indexed owner, address indexed taker, uint releasedAmount, uint ownerTotal);
+    event Encumber(address indexed owner, address indexed taker, uint encumberedAmount);
+    event Release(address indexed owner, address indexed taker, uint releasedAmount);
 
-    EncumberableErc20 public token;
+    EncumberableERC20 public token;
 
     address alice = vm.addr(uint256(keccak256('alice')));
     address bob = vm.addr(uint256(keccak256('bob')));
@@ -16,7 +16,7 @@ contract EncumberableErc20Test is Test {
 
 
     function setUp() public  {
-        token = new EncumberableErc20("Test", "eTest");
+        token = new EncumberableERC20("Test", "eTest");
         token.mint(alice, 20e18);
         token.mint(bob, 20e18);
 
@@ -58,15 +58,15 @@ contract EncumberableErc20Test is Test {
         assertEq(token.encumbrances(alice, bob), 1e18);
 
         vm.expectEmit(true, true, false, true, address(token));
-        emit Release(alice, bob, 0.4e18, 0.6e18);
+        emit Release(alice, bob, 0.4e18);
         token.release(alice, 0.4e18);
 
         vm.stopPrank();
-
-        vm.expectEmit(true, true, false, true, address(token));
-        emit Encumber(alice, bob, 0.2e18, 0.8e18);
-        
         vm.startPrank(alice);
+        
+        vm.expectEmit(true, true, false, true, address(token));
+        emit Encumber(alice, bob, 0.2e18);
+        
         token.encumber(bob, 0.2e18);
         vm.stopPrank();
     }
