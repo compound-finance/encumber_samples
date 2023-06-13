@@ -43,12 +43,12 @@ contract EncumberableERC20 is ERC20 {
     }
 
     // If bringing balance and encumbrances closer to equal, must check
-    function freeBalanceOf(address a) public view returns (uint) {
+    function availableBalanceOf(address a) public view returns (uint) {
         return (balanceOf(a) - encumberedBalance[a]);
     }
 
     function _encumber(address owner, address taker, uint amount) private {
-        require(freeBalanceOf(owner) >= amount, "insufficient balance");
+        require(availableBalanceOf(owner) >= amount, "insufficient balance");
         encumbrances[owner][taker] += amount;
         encumberedBalance[owner] += amount;
         emit Encumber(owner, taker, amount);
@@ -65,7 +65,7 @@ contract EncumberableERC20 is ERC20 {
 
     function transfer(address dst, uint amount) public override returns (bool) {
         // check but dont spend encumbrance
-        require(freeBalanceOf(msg.sender) >= amount, "insufficient balance");
+        require(availableBalanceOf(msg.sender) >= amount, "insufficient balance");
         _transfer(msg.sender, dst, amount);
         return true;
     }
@@ -82,7 +82,7 @@ contract EncumberableERC20 is ERC20 {
             // We are now moving only "free" tokens and must check
             // to not unfairly move tokens encumbered to others
 
-           require(freeBalanceOf(src) >= excessAmount, "insufficient balance");
+           require(availableBalanceOf(src) >= excessAmount, "insufficient balance");
 
             _spendAllowance(src, dst, excessAmount);
         } else {

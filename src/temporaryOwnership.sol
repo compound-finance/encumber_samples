@@ -1,7 +1,6 @@
-
 // A token can be sent to another user with an encumberance back to the original owner to be released based on immutable smart contract logic.
 // This would allow the leasing of an NFT for the duration of an event, or to allow a payment plan for purchasing an NFT that reverts back to the
-// original owner if payments are not met. 
+// original owner if payments are not met.
 
 // This requires transferring the token to the recipient while retaining an encumbrance to back to a logic contract.
 
@@ -14,7 +13,7 @@ contract TemporaryOwnership {
         address originalOwner;
         uint expiration;
     }
-    // tokenContract -> tokenId -> expiration
+    // tokenContract -> tokenId -> Receipt
     mapping (address => mapping (uint256 => Receipt)) public receipts;
 
     function lendNft(address tokenContract, uint tokenId, address recipient, uint expiration) external  {

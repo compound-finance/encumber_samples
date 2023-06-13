@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "forge-std/Test.sol";
+
 import { ERC721 } from "../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
 contract EncumberableERC721 is ERC721 {
@@ -44,13 +46,25 @@ contract EncumberableERC721 is ERC721 {
     emit Release(owner, msg.sender, tokenId);
   }
 
+  function transferFrom(address from, address to, uint tokenId) public override {
+      address encumbrance = encumbrances[from][tokenId];
+
+      if ( encumbrance == msg.sender ) {
+          // force the approval if encumbered
+          _approve(msg.sender, tokenId);
+          // and delete the encumbrance
+          delete encumbrances[from][tokenId];
+      }
+      super.transferFrom(from, to, tokenId);
+  }
+
   function transferWithEncumbrance(address to, address taker, uint256 tokenId) public {
     _transfer(msg.sender, to, tokenId);
     _encumber(to, taker, tokenId);
   }
 
   function transferFromWithEncumbrance(address from, address to, address taker, uint256 tokenId) public {
-    transferFrom(from, to, tokenId);
+    _transfer(from, to, tokenId);
     _encumber(to, taker, tokenId);
   }
 }
