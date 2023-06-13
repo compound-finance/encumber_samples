@@ -7,8 +7,8 @@ import "forge-std/Test.sol";
 import { ERC721 } from "../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
 contract EncumberableERC721 is ERC721 {
-  // owner -> token ID -> taker
-  mapping (address => mapping (uint256 => address)) public encumbrances;
+  // token ID -> taker
+  mapping (uint256 => address) public encumbrances;
 
   address public minter;
 
@@ -35,26 +35,29 @@ contract EncumberableERC721 is ERC721 {
   }
 
   function _encumber(address owner, address taker, uint256 tokenId) public {
-    require(encumbrances[owner][tokenId] == address(0), "encumbrance already set for token");
-    encumbrances[owner][tokenId] = taker;
+    require(encumbrances[tokenId] == address(0), "Token is promised to another");
+    encumbrances[tokenId] = taker;
     emit Encumber(owner, taker, tokenId);
   }
 
   function release(address owner, uint256 tokenId) public {
-    require(msg.sender == encumbrances[owner][tokenId], "Not encumbrance taker");
-    delete encumbrances[owner][tokenId];
+    require(msg.sender == encumbrances[tokenId], "Not encumbrance taker");
+    delete encumbrances[tokenId];
     emit Release(owner, msg.sender, tokenId);
   }
 
   function transferFrom(address from, address to, uint tokenId) public override {
-      address encumbrance = encumbrances[from][tokenId];
+      address taker = encumbrances[tokenId];
 
-      if ( encumbrance == msg.sender ) {
+      if ( taker == msg.sender ) {
           // force the approval if encumbered
           _approve(msg.sender, tokenId);
           // and delete the encumbrance
-          delete encumbrances[from][tokenId];
+          delete encumbrances[tokenId];
+      } else {
+          require(taker == address(0), "Token is promised to another");
       }
+
       super.transferFrom(from, to, tokenId);
   }
 

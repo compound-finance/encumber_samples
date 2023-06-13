@@ -27,7 +27,7 @@ contract TemporaryOwnershipTest is Test {
 
     function testLendNft() public {
         _bobLendToAlice();
-        assertEq(token.encumbrances(alice, tokenId), address(temporaryOwnership));
+        assertEq(token.encumbrances(tokenId), address(temporaryOwnership));
         assertEq(token.ownerOf(tokenId), alice);
     }
 
@@ -43,12 +43,12 @@ contract TemporaryOwnershipTest is Test {
 
         console.log(bob);
         console.log(address( temporaryOwnership ));
-        console.log(token.encumbrances(alice, tokenId));
+        console.log(token.encumbrances(tokenId));
 
         temporaryOwnership.recallNft(address(token), tokenId, alice);
         vm.stopPrank();
 
-        assertEq(token.encumbrances(alice, tokenId), address(0));
+        assertEq(token.encumbrances(tokenId), address(0));
         assertEq(token.ownerOf(tokenId), bob);
     }
 
@@ -59,7 +59,7 @@ contract TemporaryOwnershipTest is Test {
         temporaryOwnership.letRecipientKeepNft(address(token), tokenId, alice);
         vm.stopPrank();
 
-        assertEq(token.encumbrances(alice, tokenId), address(0));
+        assertEq(token.encumbrances(tokenId), address(0));
         assertEq(token.ownerOf(tokenId), alice);
     }
 
