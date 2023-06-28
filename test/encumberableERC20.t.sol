@@ -28,7 +28,7 @@ contract EncumberableErc20Test is Test {
     }
 
     function testBlocksBasicTransfer() public {
-        assertEq(token.encumberedBalance(alice), 1e18);
+        assertEq(token.encumberedBalanceOf(alice), 1e18);
         assertEq(token.encumbrances(alice, bob), 1e18);
 
         vm.startPrank(alice);
@@ -47,14 +47,14 @@ contract EncumberableErc20Test is Test {
         vm.startPrank(bob);
         token.release(alice, 0.5e18);
 
-        assertEq(token.encumberedBalance(alice), 0.5e18);
+        assertEq(token.encumberedBalanceOf(alice), 0.5e18);
         assertEq(token.encumbrances(alice, bob), 0.5e18);
     }
 
     function testEvents() public {
         vm.startPrank(bob);
 
-        assertEq(token.encumberedBalance(alice), 1e18);
+        assertEq(token.encumberedBalanceOf(alice), 1e18);
         assertEq(token.encumbrances(alice, bob), 1e18);
 
         vm.expectEmit(true, true, false, true, address(token));
