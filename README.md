@@ -30,6 +30,6 @@ An inversion of the encumbrance-- a toy contract where an NFT is lent to another
 
 ## Feedback
 
-Please feel free to add new examples, comment on the specification or implementation code or leave general thoughts as issues. Also, contribute to the [Encumber ERC specification](#) or [its conversation page](#).
+Please feel free to add new examples, comment on the specification or implementation code or leave general thoughts as issues. Also, contribute to the [Encumber ERC specification](https://github.com/ethereum/EIPs/pull/7246) or [its conversation page](https://ethereum-magicians.org/t/encumber-extending-the-erc-20-token-interface-to-allow-pledging-tokens-without-giving-up-ownership/14849).
 
 All code in the repo is released under a [CC0 license](https://creativecommons.org/share-your-work/public-domain/cc0/).
